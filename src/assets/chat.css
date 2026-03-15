@@ -1,0 +1,575 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+/* =========================================
+   CSS 变量
+   ========================================= */
+.page-container {
+    /* Light Mode */
+    --bg-page: #f4f4f5;
+    --bg-card: #ffffff;
+    --text-primary: #18181b;
+    --text-secondary: #71717a;
+    --border-color: #e4e4e7;
+    --accent-color: #18181b;
+    --accent-text: #ffffff;
+    --input-bg: #f4f4f5;
+    --bubble-user: #18181b;
+    --bubble-user-text: #ffffff;
+    --bubble-ai: #f4f4f5;
+    --bubble-ai-text: #18181b;
+    --success: #10b981;
+    --error: #ef4444;
+
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    /* 关键修改：使用 100dvh 确保在移动端也是全屏 */
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* 防止页面级滚动 */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.page-container.dark {
+    /* Dark Mode */
+    --bg-page: #09090b;
+    --bg-card: #18181b;
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --border-color: #27272a;
+    --accent-color: #ffffff;
+    --accent-text: #000000;
+    --input-bg: #27272a;
+    --bubble-user: #3f3f46;
+    --bubble-user-text: #ffffff;
+    --bubble-ai: #27272a;
+    --bubble-ai-text: #e4e4e7;
+}
+/* Toast Notification 样式 */
+.toast-notification {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 1000;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+}
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2000; padding: 20px;
+}
+
+.modal-card {
+  width: 100%; max-width: 420px;
+  padding: 30px; background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  animation: modal-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header h3 { margin: 0; font-size: 1.25rem; font-weight: 800; }
+.modal-body p { margin: 15px 0 25px; color: var(--text-secondary); line-height: 1.6; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 12px; }
+.ghost-btn {
+  background: #ffffff; color: rgb(53, 53, 53); border: none;
+  padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer;
+}
+.danger-btn {
+  background: #ef4444; color: white; border: none;
+  padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+.toast-notification.success {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success-text);
+}
+
+.toast-notification.error {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border: 1px solid var(--error-text);
+}
+
+/* Toast 动画 */
+.toast-slide-enter-active,
+.toast-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.toast-slide-enter-from,
+.toast-slide-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -20px);
+}
+.toast-slide-enter-to,
+.toast-slide-leave-from {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+/* =========================================
+   通用组件
+   ========================================= */
+.bento-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 100;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* =========================================
+   A. 认证卡片
+   ========================================= */
+.center-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.icon-ring {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 1px solid var(--border-color);
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mono-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.mono-input:focus {
+    border-color: var(--text-primary);
+}
+
+.action-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent-color);
+    color: var(--accent-text);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-btn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.card-footer {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* =========================================
+   B. 聊天卡片 (关键修复：高度占满)
+   ========================================= */
+.chat-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    /* PC 端保留边距 */
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.chat-card {
+    width: 100%;
+    max-width: 900px;
+    /* 关键修改：高度100%，取消最大高度限制，让它垂直撑满 wrapper */
+    height: 100%;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.chat-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 2px var(--bg-card);
+}
+
+.status-indicator.error {
+    background: var(--error);
+}
+
+.meta-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.agent-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.session-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.session-id:hover {
+    text-decoration: underline;
+    color: var(--text-primary);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.policy-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--input-bg);
+    color: var(--text-secondary);
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    color: var(--error);
+}
+
+/* Messages */
+.message-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--bg-card);
+}
+
+.message-row {
+    display: flex;
+    max-width: 80%;
+}
+
+.message-row.user {
+    align-self: flex-end;
+}
+
+.message-row.assistant,
+.message-row.system {
+    align-self: flex-start;
+}
+
+.message-row.system {
+    align-self: center;
+    max-width: 90%;
+}
+
+.bubble {
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.user .bubble {
+    background: var(--bubble-user);
+    color: var(--bubble-user-text);
+    border-bottom-right-radius: 4px;
+}
+
+.assistant .bubble {
+    background: var(--bubble-ai);
+    color: var(--bubble-ai-text);
+    border-bottom-left-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.system .bubble {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.warn-icon {
+    margin-right: 6px;
+}
+
+/* Loading Animation */
+.loading {
+    display: flex;
+    gap: 4px;
+    padding: 16px 20px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    animation: pulse 1.4s infinite ease-in-out;
+}
+
+.dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes pulse {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* Input Area */
+.input-area {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+    /* 移动端安全区适配 */
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+.input-area input {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.input-area input:focus {
+    background: var(--bg-card);
+    border-color: var(--text-primary);
+}
+
+.send-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--accent-color);
+    color: var(--accent-text);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: transform 0.1s;
+}
+
+.send-btn:active {
+    transform: scale(0.95);
+}
+
+.send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   移动端适配 (彻底全屏)
+   ========================================= */
+@media (max-width: 768px) {
+
+    /* 移除外部容器的内边距，实现全屏 */
+    .chat-wrapper {
+        padding: 0;
+        height: 100dvh;
+    }
+
+    /* 移除卡片圆角和边框，像原生 App */
+    .bento-card {
+        border-radius: 0;
+        border: none;
+        border-bottom: none;
+        /* 移除底部边框 */
+        height: 100%;
+        max-height: none;
+    }
+
+    /* 欢迎页适配 */
+    .center-wrapper {
+        padding: 16px;
+    }
+
+    .auth-card {
+        padding: 30px 20px;
+    }
+
+    /* 主题切换按钮位置调整 */
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    /* 输入框区域适配 */
+    .input-area {
+        padding: 12px 16px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+}

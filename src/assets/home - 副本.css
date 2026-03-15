@@ -1,0 +1,351 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+/* --- 状态提示样式 --- */
+.status-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50vh;
+    color: #888;
+    font-family: 'Inter', sans-serif;
+}
+
+.status-container.error {
+    color: #ff4d4f;
+}
+
+/* =========================================
+   CSS 变量系统
+   ========================================= */
+.bento-container {
+    --c-bg-card: #ffffff;
+    --c-border: #e4e4e7;
+    --c-border-hover: #d4d4d8;
+    --c-text-primary: #18181b;
+    --c-text-secondary: #52525b;
+    --c-text-muted: #71717a;
+    --c-profile-bg: linear-gradient(145deg, #ffffff 0%, #f4f4f5 100%);
+    --c-name-gradient: linear-gradient(to right, #18181b, #52525b);
+
+    /* 社交颜色 */
+    --c-social-bg-twitter: #ffffff;
+    --c-social-bg-github: #ffffff;
+    --c-social-text: #18181b;
+    --c-social-border: #e4e4e7;
+
+    --c-tag-bg: #f4f4f5;
+    --c-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    --c-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --map-filter: grayscale(100%) opacity(0.4);
+
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bento-container.dark {
+    --c-bg-card: #18181b;
+    --c-border: #27272a;
+    --c-border-hover: #3f3f46;
+    --c-text-primary: #ffffff;
+    --c-text-secondary: #e4e4e7;
+    --c-text-muted: #a1a1aa;
+    --c-profile-bg: linear-gradient(145deg, #18181b 0%, #09090b 100%);
+    --c-name-gradient: linear-gradient(to right, #fff, #a1a1aa);
+
+    --c-social-bg-twitter: #000000;
+    --c-social-bg-github: #24292f;
+    --c-social-text: #ffffff;
+    --c-social-border: #3f3f46;
+
+    --c-tag-bg: #27272a;
+    --c-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    --c-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+    --map-filter: grayscale(100%) invert(10%) contrast(120%);
+}
+
+/* =========================================
+   布局与基础
+   ========================================= */
+.bento-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1080px;
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+    color: var(--c-text-primary);
+    position: relative;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--c-border);
+    background: var(--c-bg-card);
+    color: var(--c-text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--c-shadow);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    border-color: var(--c-text-muted);
+}
+
+.card {
+    background: var(--c-bg-card);
+    border: 1px solid var(--c-border);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--c-shadow);
+    color: var(--c-text-primary);
+    text-decoration: none;
+    /* 去除a标签默认下划线 */
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    border-color: var(--c-border-hover);
+    box-shadow: var(--c-shadow-hover);
+}
+
+/* =========================================
+   具体组件样式
+   ========================================= */
+
+/* Profile */
+.profile-card {
+    grid-column: span 2;
+    grid-row: span 2;
+    background: var(--c-profile-bg);
+}
+
+.avatar-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    padding: 3px;
+    border: 1px solid var(--c-border);
+    margin-bottom: 20px;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.profile-text h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.03em;
+    background: var(--c-name-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.role {
+    font-size: 1.2rem;
+    color: var(--c-text-secondary);
+    font-weight: 500;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+.bio {
+    font-size: 0.95rem;
+    color: var(--c-text-muted);
+    line-height: 1.6;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    width: fit-content;
+    background: rgba(34, 197, 94, 0.1);
+    color: #15803d;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.bento-container.dark .status-badge {
+    color: #4ade80;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: gray;
+    border-radius: 50%;
+}
+
+.dot.online {
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+}
+
+/* Map */
+.map-card {
+    grid-column: span 1;
+    grid-row: span 2;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/ec/World_map_blank_without_borders.svg');
+    background-size: cover;
+    background-position: 200px 0px;
+    background-color: var(--c-bg-card);
+    filter: var(--map-filter);
+    align-items: center;
+    justify-content: center;
+}
+
+.location-tag {
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    padding: 8px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+}
+
+/* Socials */
+.social-card {
+    grid-column: span 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* 对应后端返回的 platform 字段 */
+.social-card.twitter {
+    background: var(--c-social-bg-twitter);
+    border-color: var(--c-social-border);
+}
+
+.social-card.github {
+    background: var(--c-social-bg-github);
+    border-color: var(--c-social-border);
+}
+
+/* Stack */
+.stack-card {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+.stack-card h3 {
+    margin-top: 0;
+    font-size: 0.9rem;
+    color: var(--c-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stack-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.stack-icons span {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 8px 12px;
+    background: var(--c-tag-bg);
+    border-radius: 8px;
+    text-align: center;
+    color: var(--c-text-primary);
+    border: 1px solid transparent;
+}
+
+/* Projects */
+.project-card {
+    grid-column: span 1;
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.project-tag {
+    font-size: 0.75rem;
+    border: 1px solid;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.arrow-icon {
+    opacity: 0;
+    transform: translate(-5px, 5px);
+    transition: 0.2s;
+    color: var(--c-text-primary);
+}
+
+.project-card:hover .arrow-icon {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+.project-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 1.1rem;
+    color: var(--c-text-primary);
+}
+
+.project-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--c-text-muted);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .bento-container {
+        grid-template-columns: 1fr;
+    }
+
+    .theme-toggle {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin-left: auto;
+        margin-bottom: 10px;
+    }
+
+    .profile-card,
+    .map-card,
+    .stack-card,
+    .social-card,
+    .project-card {
+        grid-column: span 1;
+        grid-row: auto;
+        min-height: 160px;
+    }
+
+    .map-card {
+        height: 200px;
+    }
+}
